@@ -17,6 +17,9 @@
 #define MIN_LONGS_VALUE 3000
 #define MAX_LONGS_VALUE 5000
 
+#define MIN_NUM_CHUNKS 0
+#define MAX_NUM_CHUNKS 50
+
 #define NELEMS(x)  (sizeof(x) / sizeof((x)[0]))
 
 typedef unsigned char BYTE;
@@ -24,38 +27,51 @@ typedef unsigned char BYTE;
 
 int main()
 {
-	// files to work with
-	FILE* configFile;
-	FILE* dataFile;
-	FILE* statsFile;
+    // files to work with
+    FILE* configFile;
+    FILE* dataFile;
+    FILE* statsFile;
 
-	//ranges
-	unsigned int ranges[6];
+    //ranges
+    unsigned int ranges[6];
 
-	//the actual numbers of bytes, shorts and longs
-	unsigned int numBytes;
-	unsigned int numShorts;
-	unsigned int numLongs;
+    //the actual numbers of bytes, shorts and longs
+    unsigned int numBytes;
+    unsigned int numShorts;
+    unsigned int numLongs;
 
-	//read the config file and store the ranges 
-	configFile = fopen(CONFIG_FILE, "rb");
-	
-	char buffer[5];
+    //read the config file and store the ranges in an array
+    configFile = fopen(CONFIG_FILE, "rb");
+    char buffer[5];
+    for (BYTE i = 0; i < NELEMS(ranges); i++)
+    {
+        fscanf(configFile, "%s", buffer);
+        ranges[i] = atoi(buffer);
+    }
+    fclose(configFile);
 
-	for (BYTE i = 0; i < NELEMS(ranges); i++)
-	{
-		fscanf(configFile, "%s", buffer);
-		ranges[i] = atoi(buffer);
-	}
+    // get the user input for the number of chunks of data
+    int userInput = 0;
+    printf("\nInput the number of chunks (it must be a positive integer in [1,49]):");
 
-	fclose(configFile);
+    //todo add input control
+    scanf("%d", &userInput);
 
-	// get user input
 
-	// begin a for loop depending on the input
-	// for each chunk, make a for loop that add a number to the file
-	// store these numbers as you go or calculate their means
-	// after that output the results to the stats file
+    // begin a for loop depending on the input
+    // for each chunk, make a for loop that adds a number to the file
+    // store these numbers as you go or calculate their means
+    // after that output the results to the stats file
 
-	return 0;
+
+    //halt execution 
+    char cTemp;
+    printf("\nPress Enter to exit the program:");
+    cTemp = getchar();
+    while (cTemp != 0x0a)
+    {
+        cTemp = getchar();
+    }
+
+    return 0;
 }
