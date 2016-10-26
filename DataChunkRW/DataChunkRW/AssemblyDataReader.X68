@@ -16,17 +16,18 @@ Main:
 
 	jsr InitializeVars
 	jsr GetInput
-	;calculate averages
 	jsr CalculateAverages
 	;display averages
-
+	jsr DisplayAverages
+    
+    jmp  Main
     STOP #$3000
 
 
 InitializeVars:
 
 	lea 	data, a0
-	move.l 	(a0), d7
+	move.l 	(a0)+, d7
 	jsr 	SwapBytes
 	move.l 	d7, (numberOfChunks)
 
@@ -54,11 +55,11 @@ GetInput:
 
     ;input control
     cmp.l 	#(MIN_CHUNK_NUMBER), d1
-    ble 	.DisplayMessage
+    blt 	.DisplayMessage
 
 
     cmp.l 	(numberOfChunks), d1
-    bge 	.DisplayMessage
+    bgt 	.DisplayMessage
 
     ;store the chunk number
     move.l 	d1, (chunkNumber)
@@ -66,21 +67,267 @@ GetInput:
 	;movem.l	(sp)+, ALL_REG
     rts
 
+
 CalculateAverages:
 	
+	move.l 	a0, a6
+	;set current chunk
+	clr.l 	d6
+.RetrieveStgs:
+	add.l 	#1, d6
+
+	move.l 	(a6)+, d7
+	jsr 	SwapBytes
+	move.l 	d7, (currentNumberOfBytes)
+
+	move.l 	(a6)+, d7
+	jsr 	SwapBytes
+	move.l 	d7, (currentNumberOfShorts)
 	
+	move.l 	(a6)+, d7
+	jsr 	SwapBytes
+	move.l 	d7, (currentNumberOfLongs)
+	
+	move.l 	(a6)+, d7
+	jsr 	SwapBytes
+	move.l 	d7, (currentBytesPadding)
+	
+	;move.l 	(a6)+, d7
+	;jsr 	SwapBytes
+	;move.l 	d7, (currentShortsPadding)
+
+	cmp.l 	(chunkNumber), d6
+	beq 	.MakeCalcs
+
+.ToNextChunk:
+
+	;add offsets 
+	;bytes offset
+	add.l 	(currentNumberOfBytes), a6
+	add.l 	(currentBytesPadding), a6
+	;shorts offset
+	move.l 	(currentNumberOfShorts), d0
+	;add.l 	(currentShortsPadding), d0
+	asl.l 	#1, d0
+	add.l 	d0, a6
+	;longs offset
+	move.l 	(currentNumberOfLongs), d0
+	asl.l 	#2, d0
+	add.l 	d0, a6
+
+	jmp 	.RetrieveStgs
+
+
+.MakeCalcs:
+.CalcBytesAvg:
+
+	move.l 	(currentNumberOfBytes), d0 	;counter
+	clr.l 	d1 					    	;gonna contain the total
+
+.AddNextByte:
+	
+	clr.l 	d7
+
+	move.b 	(a6)+, d7
+	add.l 	d7, d1						;add the byte to the total
+
+	sub.l 	#1, d0
+	bne 	.AddNextByte
+
+.SetBytesAvg:
+	
+	move.l 	(currentNumberOfBytes), d0 	
+	divu 	d0,d1
+
+	;get the quotient 
+	clr.l 	d2
+	move.w 	d1, d2
+	move.l 	d2, (bytesAverageQ)
+
+	swap.w 	d1
+
+	;get the remainder
+	move.w 	d1, d2
+	mulu 	#100, d2 	
+	divu 	d0, d2
+	clr.l 	d1
+	move.w 	d2, d1
+	;round
+	swap 	d2
+	clr.l 	d3
+	move.w 	d2, d3
+	asl.l 	#1, d3
+	cmp.l 	d0, d3
+	blt 	.NoByteRounding
+
+	addi.l 	#1, d1
+
+.NoByteRounding:
+	move.l 	d1, (bytesAverageR)
+
+	;add the bytes padding to the @
+	add.l 	(currentBytesPadding), a6
+
+.CalcShortsAvg:
+
+	move.l 	(currentNumberOfShorts), d0 	;counter
+	clr.l 	d1 					    		;gonna contain the total
+
+.AddNextShort:
+	
+	clr.l 	d7
+
+	move.w 	(a6)+, d7
+	rol.w   #8,d7
+	add.l 	d7, d1							;add the short to the total
+
+	sub.l 	#1, d0
+	bne 	.AddNextShort
+
+.SetShortsAvg:
+	
+	move.l 	(currentNumberOfShorts), d0 	
+	divu 	d0,d1
+
+	;get the quotient 
+	clr.l 	d2
+	move.w 	d1, d2
+	move.l 	d2, (shortsAverageQ)
+
+	swap.w 	d1
+
+	;get the remainder
+	move.w 	d1, d2
+	mulu 	#100, d2 	
+	divu 	d0, d2
+	clr.l 	d1
+	move.w 	d2, d1
+	;round
+	swap 	d2
+	clr.l 	d3
+	move.w 	d2, d3
+	asl.l 	#1, d3
+	cmp.l 	d0, d3
+	blt 	.NoShortRound
+
+	addi.l 	#1, d1
+
+.NoShortRound:
+	move.l 	d1, (shortsAverageR)
+
+
+.CalcLongsAvg:
+
+	move.l 	(currentNumberOfLongs), d0 		;counter
+	clr.l 	d1 					    		;gonna contain the total
+
+.AddNextLong:
+	
+	clr.l 	d7
+
+	move.l 	(a6)+, d7
+	jsr 	SwapBytes
+	add.l 	d7, d1							;add the long to the total
+
+	sub.l 	#1, d0
+	bne 	.AddNextLong
+
+.SetLongsAvg:
+	
+	move.l 	(currentNumberOfLongs), d0 	
+	divu 	d0,d1
+
+	;get the quotient 
+	clr.l 	d2
+	move.w 	d1, d2
+	move.l 	d2, (longsAverageQ)
+
+	swap.w 	d1
+
+	;get the remainder
+	move.w 	d1, d2
+	mulu 	#100, d2 	
+	divu 	d0, d2
+	clr.l 	d1
+	move.w 	d2, d1
+	;round
+	swap 	d2
+	clr.l 	d3
+	move.w 	d2, d3
+	asl.l 	#1, d3
+	cmp.l 	d0, d3
+	blt 	.NoLongRounding
+
+	addi.l 	#1, d1
+
+.NoLongRounding:
+	move.l 	d1, (longsAverageR)
 
 
 	rts
 
 
+DisplayAverages:
+	
+	lea 	point, a2   
+	;display byte avg message
+	lea 	bytesAvgMsg, a3
+	move.l 	(bytesAverageQ), d2
+	move.l 	(bytesAverageR), d3
 
+	jsr 	DisplayOneAverage
+
+	;display short avg message
+	lea 	shortsAvgMsg, a3
+	move.l 	(shortsAverageQ), d2
+	move.l 	(shortsAverageR), d3
+
+	jsr 	DisplayOneAverage
+
+	;display long avg message
+	lea 	longsAvgMsg, a3
+	move.l 	(longsAverageQ), d2
+	move.l 	(longsAverageR), d3
+
+	jsr 	DisplayOneAverage
+
+	rts
+
+;parameters: a2:point, a3:AvgMsg, d2: quotient, d3:remainder
+DisplayOneAverage:
+	
+	move.l 	a3, a1   
+    move.l 	#(DISPLAY_STRING_WITHOUT_RETURN), d0
+    trap 	#15
+
+    move.l 	d2, d1
+    move.l 	#(DISPLAY_NUMBER), d0
+    trap 	#15
+
+    move.l 	a2, a1   
+    move.l 	#(DISPLAY_STRING_WITHOUT_RETURN), d0
+    trap 	#15
+
+    cmp.l 	#9, d3
+    bgt 	.DontAddZero
+
+    clr.l 	d1
+    move.l 	#(DISPLAY_NUMBER), d0
+    trap 	#15
+
+.DontAddZero:
+    move.l 	d3, d1
+
+    move.l 	#(DISPLAY_NUMBER), d0
+    trap 	#15
+
+	rts
 
 ;params: d7: the long word to swapbyte, returns the bytes swapped long word in d7
 SwapBytes:
     ;DDCCBBAA
     rol.w   #8,d7   ;DDCCAABB
-    swap.w    d7    ;AABBDDCC
+    swap.w  d7    ;AABBDDCC
     rol.w   #8,d7   ;AABBCCDD
     
     rts
@@ -88,23 +335,43 @@ SwapBytes:
 
 
 
-
-
 ;variables
 
-messageFirstPart 	    dc.b 	'Input the number of the data chunk(Must be between 1 and ',0
+messageFirstPart 	    dc.b 	CR,LF,CR,LF,'Input the number of the data chunk(Must be between 1 and ',0
 messageSecondPart 	    dc.b 	'):',0
+
+bytesAvgMsg				dc.b 	CR,LF,'The bytes average is: ',0
+shortsAvgMsg			dc.b 	CR,LF,'The shorts average is: ',0
+longsAvgMsg				dc.b 	CR,LF,'The long average is: ',0
+point					dc.b 	'.',0
+
 chunkNumber     		dc.l 	0	
 
 numberOfChunks 			dc.l 	0
 
-bytesAverage 			dc.l 	0
-shortsAverage 			dc.l 	0
-longsAverage 			dc.l 	0
+currentNumberOfBytes	dc.l 	0
+currentNumberOfShorts	dc.l 	0
+currentNumberOfLongs	dc.l 	0
+currentBytesPadding		dc.l 	0
+;currentShortsPadding	dc.l 	0
+
+bytesAverageQ 			dc.l 	0
+bytesAverageR 			dc.l 	0
+shortsAverageQ 			dc.l 	0
+shortsAverageR 			dc.l 	0
+longsAverageQ 			dc.l 	0
+longsAverageR 			dc.l 	0
+
+
 
 data 		    		incbin 	"data.bin"
 
     END    START       
+
+
+
+
+
 
 
 

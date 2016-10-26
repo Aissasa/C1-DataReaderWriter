@@ -73,7 +73,7 @@ int main()
     }
 
     //open the files to write to
-    dataFile = fopen(DATA_FILE, "w");
+    dataFile = fopen(DATA_FILE, "wb");
     statsFile = fopen(STATS_FILE, "w");
 
     //start outputting to the files
@@ -101,7 +101,7 @@ int main()
             bytesPadding = 4 - bytesPadding;
         }
 
-        int shortsPadding = numShorts % 2;
+        //int shortsPadding = numShorts % 2;
 
         BYTE paddingChar;
 
@@ -116,7 +116,7 @@ int main()
 
         //add the padding to data.bin to avoid calculating them in assembly
         fwrite(&bytesPadding, sizeof(numLongs), 1, dataFile);
-        fwrite(&shortsPadding, sizeof(numLongs), 1, dataFile);
+        //fwrite(&shortsPadding, sizeof(numLongs), 1, dataFile);
 
 
         //create and populate a bytes array
@@ -171,14 +171,14 @@ int main()
         free(shortsArray);
 
         //add the shorts padding
-        for (int i = 0; i < shortsPadding * 2; i++)
-        {
-            paddingChar = 'p';
-            fwrite(&paddingChar, sizeof(BYTE), 1, dataFile);
-        }
-#if DEBUG
-        printf("Shorts padding: %d\n", shortsPadding);
-#endif // DEBUG
+        //for (int i = 0; i < shortsPadding * 2; i++)
+        //{
+        //    paddingChar = 'p';
+        //    fwrite(&paddingChar, sizeof(BYTE), 1, dataFile);
+        //}
+//#if DEBUG
+//        printf("Shorts padding: %d\n", shortsPadding);
+//#endif // DEBUG
 
         //calculate short average
         average = (float)total / (float)numShorts;

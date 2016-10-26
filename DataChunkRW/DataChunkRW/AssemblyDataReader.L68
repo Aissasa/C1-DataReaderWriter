@@ -1,6 +1,6 @@
 00001000 Starting Address
 Assembler used: EASy68K Editor/Assembler v5.15.04
-Created On: 10/25/2016 11:51:03 PM
+Created On: 10/26/2016 3:15:59 AM
 
 00000000                             1  *-----------------------------------------------------------
 00000000                             2  * Title      : Assembly data reader
@@ -27,106 +27,375 @@ Created On: 10/25/2016 11:51:03 PM
 00001000                            23  
 00001000                            24  
 00001000                            25  ;input
-00001000  =00000000                 26  MIN_CHUNK_NUMBER    EQU 0
+00001000  =00000001                 26  MIN_CHUNK_NUMBER                EQU 1
 00001000                            27  
-00001000                            28  
-00001000  =0000000D                 29  CR  EQU $0D
-00001000  =0000000A                 30  LF  EQU $0A
-00001000  =0000000A                 31  -------------------- end include --------------------
-00001000                            32  
-00001000                            33  Main:
+00001000                            28  ;offsets
+00001000                            29  ;OFFSET_TO_NUMBER_OF_BYTES      EQU 4
+00001000                            30  ;OFFSET_TO_NUMBER_OF_SHORTS     EQU (OFFSET_TO_NUMBER_OF_BYTES+4)
+00001000                            31  ;OFFSET_TO_NUMBER_OF_LONGS      EQU (OFFSET_TO_NUMBER_OF_SHORTS+4)
+00001000                            32  ;OFFSET_TO_BYTES_PADDING            EQU (OFFSET_TO_NUMBER_OF_LONGS+4)
+00001000                            33  ;OFFSET_TO_SHORTS_PADDING       EQU (OFFSET_TO_BYTES_PADDING+4)
 00001000                            34  
-00001000  4EB9 00001016             35      jsr InitializeVars
-00001006  4EB9 0000102C             36      jsr GetInput
-0000100C                            37      ;calculate averages
-0000100C  4EB9 00001066             38      jsr CalculateAverages
-00001012                            39      ;display averages
-00001012                            40  
-00001012  4E72 3000                 41      STOP #$3000
-00001016                            42  
-00001016                            43  
-00001016                            44  InitializeVars:
-00001016                            45  
-00001016  41F9 000010C2             46      lea     data, a0
-0000101C  2E10                      47      move.l  (a0), d7
-0000101E  4EB9 00001068             48      jsr     SwapBytes
-00001024  23C7 000010B2             49      move.l  d7, (numberOfChunks)
-0000102A                            50  
-0000102A  4E75                      51      rts
-0000102C                            52  
-0000102C                            53  GetInput:
-0000102C                            54      ;movem.l    ALL_REG, -(sp)
-0000102C                            55  .DisplayMessage:
-0000102C                            56      ;display entry message
-0000102C  43F9 00001070             57      lea     messageFirstPart, a1   
-00001032  700E                      58      move.l  #(DISPLAY_STRING_WITHOUT_RETURN), d0
-00001034  4E4F                      59      trap    #15
+00001000                            35  
+00001000  =0000000D                 36  CR  EQU $0D
+00001000  =0000000A                 37  LF  EQU $0A
+00001000  =0000000A                 38  -------------------- end include --------------------
+00001000                            39  
+00001000                            40  Main:
+00001000                            41  
+00001000  4EB9 00001020             42      jsr InitializeVars
+00001006  4EB9 00001036             43      jsr GetInput
+0000100C  4EB9 00001070             44      jsr CalculateAverages
+00001012                            45      ;display averages
+00001012  4EB9 000011C4             46      jsr DisplayAverages
+00001018                            47      
+00001018  4EF8 1000                 48      jmp  Main
+0000101C  4E72 3000                 49      STOP #$3000
+00001020                            50  
+00001020                            51  
+00001020                            52  InitializeVars:
+00001020                            53  
+00001020  41F9 00001304             54      lea     data, a0
+00001026  2E18                      55      move.l  (a0)+, d7
+00001028  4EB9 0000123E             56      jsr     SwapBytes
+0000102E  23C7 000012D8             57      move.l  d7, (numberOfChunks)
+00001034                            58  
+00001034  4E75                      59      rts
 00001036                            60  
-00001036  2239 000010B2             61      move.l  (numberOfChunks), d1
-0000103C  7003                      62      move.l  #(DISPLAY_NUMBER), d0
-0000103E  4E4F                      63      trap    #15
-00001040                            64  
-00001040  43F9 000010AA             65      lea     messageSecondPart, a1   
-00001046  700D                      66      move.l  #(DISPLAY_STRING_WITH_RETURN), d0
-00001048  4E4F                      67      trap    #15
-0000104A                            68  
-0000104A                            69      ;read the chunk number from the user
-0000104A  7004                      70      move.l  #(READ_A_NUMBER), d0
-0000104C  4E4F                      71      trap    #15
-0000104E                            72  
-0000104E                            73      ;input control
-0000104E  B2BC 00000000             74      cmp.l   #(MIN_CHUNK_NUMBER), d1
-00001054  6FD6                      75      ble     .DisplayMessage
-00001056                            76  
-00001056                            77  
-00001056  B2B9 000010B2             78      cmp.l   (numberOfChunks), d1
-0000105C  6CCE                      79      bge     .DisplayMessage
-0000105E                            80  
-0000105E                            81      ;store the chunk number
-0000105E  23C1 000010AE             82      move.l  d1, (chunkNumber)
-00001064                            83  
-00001064                            84      ;movem.l    (sp)+, ALL_REG
-00001064  4E75                      85      rts
-00001066                            86  
-00001066                            87  CalculateAverages:
-00001066                            88      
-00001066                            89      
-00001066                            90  
-00001066                            91  
-00001066  4E75                      92      rts
-00001068                            93  
-00001068                            94  
-00001068                            95  
-00001068                            96  
-00001068                            97  ;params: d7: the long word to swapbyte, returns the bytes swapped long word in d7
-00001068                            98  SwapBytes:
-00001068                            99      ;DDCCBBAA
-00001068  E15F                     100      rol.w   #8,d7   ;DDCCAABB
-0000106A  4847                     101      swap.w    d7    ;AABBDDCC
-0000106C  E15F                     102      rol.w   #8,d7   ;AABBCCDD
-0000106E                           103      
-0000106E  4E75                     104      rts
-00001070                           105  
-00001070                           106  
-00001070                           107  
-00001070                           108  
-00001070                           109  
-00001070                           110  
-00001070                           111  ;variables
-00001070                           112  
-00001070= 49 6E 70 75 74 20 ...    113  messageFirstPart        dc.b    'Input the number of the data chunk(Must be between 1 and ',0
-000010AA= 29 3A 00                 114  messageSecondPart       dc.b    '):',0
-000010AE= 00000000                 115  chunkNumber             dc.l    0   
-000010B2                           116  
-000010B2= 00000000                 117  numberOfChunks          dc.l    0
-000010B6                           118  
-000010B6= 00000000                 119  bytesAverage            dc.l    0
-000010BA= 00000000                 120  shortsAverage           dc.l    0
-000010BE= 00000000                 121  longsAverage            dc.l    0
-000010C2                           122  
-000010C2                           123  data                    incbin  "data.bin"
-000086EC                           124  
-000086EC                           125      END    START       
+00001036                            61  GetInput:
+00001036                            62      ;movem.l    ALL_REG, -(sp)
+00001036                            63  .DisplayMessage:
+00001036                            64      ;display entry message
+00001036  43F9 00001246             65      lea     messageFirstPart, a1   
+0000103C  700E                      66      move.l  #(DISPLAY_STRING_WITHOUT_RETURN), d0
+0000103E  4E4F                      67      trap    #15
+00001040                            68  
+00001040  2239 000012D8             69      move.l  (numberOfChunks), d1
+00001046  7003                      70      move.l  #(DISPLAY_NUMBER), d0
+00001048  4E4F                      71      trap    #15
+0000104A                            72  
+0000104A  43F9 00001284             73      lea     messageSecondPart, a1   
+00001050  700D                      74      move.l  #(DISPLAY_STRING_WITH_RETURN), d0
+00001052  4E4F                      75      trap    #15
+00001054                            76  
+00001054                            77      ;read the chunk number from the user
+00001054  7004                      78      move.l  #(READ_A_NUMBER), d0
+00001056  4E4F                      79      trap    #15
+00001058                            80  
+00001058                            81      ;input control
+00001058  B2BC 00000001             82      cmp.l   #(MIN_CHUNK_NUMBER), d1
+0000105E  6DD6                      83      blt     .DisplayMessage
+00001060                            84  
+00001060                            85  
+00001060  B2B9 000012D8             86      cmp.l   (numberOfChunks), d1
+00001066  6ECE                      87      bgt     .DisplayMessage
+00001068                            88  
+00001068                            89      ;store the chunk number
+00001068  23C1 000012D4             90      move.l  d1, (chunkNumber)
+0000106E                            91  
+0000106E                            92      ;movem.l    (sp)+, ALL_REG
+0000106E  4E75                      93      rts
+00001070                            94  
+00001070                            95  
+00001070                            96  CalculateAverages:
+00001070                            97      
+00001070  2C48                      98      move.l  a0, a6
+00001072                            99      ;set current chunk
+00001072  4286                     100      clr.l   d6
+00001074                           101  .RetrieveStgs:
+00001074  5286                     102      add.l   #1, d6
+00001076                           103  
+00001076  2E1E                     104      move.l  (a6)+, d7
+00001078  4EB9 0000123E            105      jsr     SwapBytes
+0000107E  23C7 000012DC            106      move.l  d7, (currentNumberOfBytes)
+00001084                           107  
+00001084  2E1E                     108      move.l  (a6)+, d7
+00001086  4EB9 0000123E            109      jsr     SwapBytes
+0000108C  23C7 000012E0            110      move.l  d7, (currentNumberOfShorts)
+00001092                           111      
+00001092  2E1E                     112      move.l  (a6)+, d7
+00001094  4EB9 0000123E            113      jsr     SwapBytes
+0000109A  23C7 000012E4            114      move.l  d7, (currentNumberOfLongs)
+000010A0                           115      
+000010A0  2E1E                     116      move.l  (a6)+, d7
+000010A2  4EB9 0000123E            117      jsr     SwapBytes
+000010A8  23C7 000012E8            118      move.l  d7, (currentBytesPadding)
+000010AE                           119      
+000010AE                           120      ;move.l     (a6)+, d7
+000010AE                           121      ;jsr    SwapBytes
+000010AE                           122      ;move.l     d7, (currentShortsPadding)
+000010AE                           123  
+000010AE  BCB9 000012D4            124      cmp.l   (chunkNumber), d6
+000010B4  6700 0026                125      beq     .MakeCalcs
+000010B8                           126  
+000010B8                           127  .ToNextChunk:
+000010B8                           128  
+000010B8                           129      ;add offsets 
+000010B8                           130      ;bytes offset
+000010B8  DDF9 000012DC            131      add.l   (currentNumberOfBytes), a6
+000010BE  DDF9 000012E8            132      add.l   (currentBytesPadding), a6
+000010C4                           133      ;shorts offset
+000010C4  2039 000012E0            134      move.l  (currentNumberOfShorts), d0
+000010CA                           135      ;add.l  (currentShortsPadding), d0
+000010CA  E380                     136      asl.l   #1, d0
+000010CC  DDC0                     137      add.l   d0, a6
+000010CE                           138      ;longs offset
+000010CE  2039 000012E4            139      move.l  (currentNumberOfLongs), d0
+000010D4  E580                     140      asl.l   #2, d0
+000010D6  DDC0                     141      add.l   d0, a6
+000010D8                           142  
+000010D8  4EF8 1074                143      jmp     .RetrieveStgs
+000010DC                           144  
+000010DC                           145  
+000010DC                           146  .MakeCalcs:
+000010DC                           147  .CalcBytesAvg:
+000010DC                           148  
+000010DC  2039 000012DC            149      move.l  (currentNumberOfBytes), d0  ;counter
+000010E2  4281                     150      clr.l   d1                          ;gonna contain the total
+000010E4                           151  
+000010E4                           152  .AddNextByte:
+000010E4                           153      
+000010E4  4287                     154      clr.l   d7
+000010E6                           155  
+000010E6  1E1E                     156      move.b  (a6)+, d7
+000010E8  D287                     157      add.l   d7, d1                      ;add the byte to the total
+000010EA                           158  
+000010EA  5380                     159      sub.l   #1, d0
+000010EC  66F6                     160      bne     .AddNextByte
+000010EE                           161  
+000010EE                           162  .SetBytesAvg:
+000010EE                           163      
+000010EE  2039 000012DC            164      move.l  (currentNumberOfBytes), d0  
+000010F4  82C0                     165      divu    d0,d1
+000010F6                           166  
+000010F6                           167      ;get the quotient 
+000010F6  4282                     168      clr.l   d2
+000010F8  3401                     169      move.w  d1, d2
+000010FA  23C2 000012EC            170      move.l  d2, (bytesAverageQ)
+00001100                           171  
+00001100  4841                     172      swap.w  d1
+00001102                           173  
+00001102                           174      ;get the remainder
+00001102  3401                     175      move.w  d1, d2
+00001104  C4FC 0064                176      mulu    #100, d2    
+00001108  84C0                     177      divu    d0, d2
+0000110A  4281                     178      clr.l   d1
+0000110C  3202                     179      move.w  d2, d1
+0000110E                           180      ;round
+0000110E  4842                     181      swap    d2
+00001110  4283                     182      clr.l   d3
+00001112  3602                     183      move.w  d2, d3
+00001114  E383                     184      asl.l   #1, d3
+00001116  B680                     185      cmp.l   d0, d3
+00001118  6D00 0004                186      blt     .NoByteRounding
+0000111C                           187  
+0000111C  5281                     188      addi.l  #1, d1
+0000111E                           189  
+0000111E                           190  .NoByteRounding:
+0000111E  23C1 000012F0            191      move.l  d1, (bytesAverageR)
+00001124                           192  
+00001124                           193      ;add the bytes padding to the @
+00001124  DDF9 000012E8            194      add.l   (currentBytesPadding), a6
+0000112A                           195  
+0000112A                           196  .CalcShortsAvg:
+0000112A                           197  
+0000112A  2039 000012E0            198      move.l  (currentNumberOfShorts), d0     ;counter
+00001130  4281                     199      clr.l   d1                              ;gonna contain the total
+00001132                           200  
+00001132                           201  .AddNextShort:
+00001132                           202      
+00001132  4287                     203      clr.l   d7
+00001134                           204  
+00001134  3E1E                     205      move.w  (a6)+, d7
+00001136  E15F                     206      rol.w   #8,d7
+00001138  D287                     207      add.l   d7, d1                          ;add the short to the total
+0000113A                           208  
+0000113A  5380                     209      sub.l   #1, d0
+0000113C  66F4                     210      bne     .AddNextShort
+0000113E                           211  
+0000113E                           212  .SetShortsAvg:
+0000113E                           213      
+0000113E  2039 000012E0            214      move.l  (currentNumberOfShorts), d0     
+00001144  82C0                     215      divu    d0,d1
+00001146                           216  
+00001146                           217      ;get the quotient 
+00001146  4282                     218      clr.l   d2
+00001148  3401                     219      move.w  d1, d2
+0000114A  23C2 000012F4            220      move.l  d2, (shortsAverageQ)
+00001150                           221  
+00001150  4841                     222      swap.w  d1
+00001152                           223  
+00001152                           224      ;get the remainder
+00001152  3401                     225      move.w  d1, d2
+00001154  C4FC 0064                226      mulu    #100, d2    
+00001158  84C0                     227      divu    d0, d2
+0000115A  4281                     228      clr.l   d1
+0000115C  3202                     229      move.w  d2, d1
+0000115E                           230      ;round
+0000115E  4842                     231      swap    d2
+00001160  4283                     232      clr.l   d3
+00001162  3602                     233      move.w  d2, d3
+00001164  E383                     234      asl.l   #1, d3
+00001166  B680                     235      cmp.l   d0, d3
+00001168  6D00 0004                236      blt     .NoShortRound
+0000116C                           237  
+0000116C  5281                     238      addi.l  #1, d1
+0000116E                           239  
+0000116E                           240  .NoShortRound:
+0000116E  23C1 000012F8            241      move.l  d1, (shortsAverageR)
+00001174                           242  
+00001174                           243  
+00001174                           244  .CalcLongsAvg:
+00001174                           245  
+00001174  2039 000012E4            246      move.l  (currentNumberOfLongs), d0      ;counter
+0000117A  4281                     247      clr.l   d1                              ;gonna contain the total
+0000117C                           248  
+0000117C                           249  .AddNextLong:
+0000117C                           250      
+0000117C  4287                     251      clr.l   d7
+0000117E                           252  
+0000117E  2E1E                     253      move.l  (a6)+, d7
+00001180  4EB9 0000123E            254      jsr     SwapBytes
+00001186  D287                     255      add.l   d7, d1                          ;add the long to the total
+00001188                           256  
+00001188  5380                     257      sub.l   #1, d0
+0000118A  66F0                     258      bne     .AddNextLong
+0000118C                           259  
+0000118C                           260  .SetLongsAvg:
+0000118C                           261      
+0000118C  2039 000012E4            262      move.l  (currentNumberOfLongs), d0  
+00001192  82C0                     263      divu    d0,d1
+00001194                           264  
+00001194                           265      ;get the quotient 
+00001194  4282                     266      clr.l   d2
+00001196  3401                     267      move.w  d1, d2
+00001198  23C2 000012FC            268      move.l  d2, (longsAverageQ)
+0000119E                           269  
+0000119E  4841                     270      swap.w  d1
+000011A0                           271  
+000011A0                           272      ;get the remainder
+000011A0  3401                     273      move.w  d1, d2
+000011A2  C4FC 0064                274      mulu    #100, d2    
+000011A6  84C0                     275      divu    d0, d2
+000011A8  4281                     276      clr.l   d1
+000011AA  3202                     277      move.w  d2, d1
+000011AC                           278      ;round
+000011AC  4842                     279      swap    d2
+000011AE  4283                     280      clr.l   d3
+000011B0  3602                     281      move.w  d2, d3
+000011B2  E383                     282      asl.l   #1, d3
+000011B4  B680                     283      cmp.l   d0, d3
+000011B6  6D00 0004                284      blt     .NoLongRounding
+000011BA                           285  
+000011BA  5281                     286      addi.l  #1, d1
+000011BC                           287  
+000011BC                           288  .NoLongRounding:
+000011BC  23C1 00001300            289      move.l  d1, (longsAverageR)
+000011C2                           290  
+000011C2                           291  
+000011C2  4E75                     292      rts
+000011C4                           293  
+000011C4                           294  
+000011C4                           295  DisplayAverages:
+000011C4                           296      
+000011C4  45F9 000012D2            297      lea     point, a2   
+000011CA                           298      ;display byte avg message
+000011CA  47F9 00001287            299      lea     bytesAvgMsg, a3
+000011D0  2439 000012EC            300      move.l  (bytesAverageQ), d2
+000011D6  2639 000012F0            301      move.l  (bytesAverageR), d3
+000011DC                           302  
+000011DC  4EB9 00001214            303      jsr     DisplayOneAverage
+000011E2                           304  
+000011E2                           305      ;display short avg message
+000011E2  47F9 000012A0            306      lea     shortsAvgMsg, a3
+000011E8  2439 000012F4            307      move.l  (shortsAverageQ), d2
+000011EE  2639 000012F8            308      move.l  (shortsAverageR), d3
+000011F4                           309  
+000011F4  4EB9 00001214            310      jsr     DisplayOneAverage
+000011FA                           311  
+000011FA                           312      ;display long avg message
+000011FA  47F9 000012BA            313      lea     longsAvgMsg, a3
+00001200  2439 000012FC            314      move.l  (longsAverageQ), d2
+00001206  2639 00001300            315      move.l  (longsAverageR), d3
+0000120C                           316  
+0000120C  4EB9 00001214            317      jsr     DisplayOneAverage
+00001212                           318  
+00001212  4E75                     319      rts
+00001214                           320  
+00001214                           321  ;parameters: a2:point, a3:AvgMsg, d2: quotient, d3:remainder
+00001214                           322  DisplayOneAverage:
+00001214                           323      
+00001214  224B                     324      move.l  a3, a1   
+00001216  700E                     325      move.l  #(DISPLAY_STRING_WITHOUT_RETURN), d0
+00001218  4E4F                     326      trap    #15
+0000121A                           327  
+0000121A  2202                     328      move.l  d2, d1
+0000121C  7003                     329      move.l  #(DISPLAY_NUMBER), d0
+0000121E  4E4F                     330      trap    #15
+00001220                           331  
+00001220  224A                     332      move.l  a2, a1   
+00001222  700E                     333      move.l  #(DISPLAY_STRING_WITHOUT_RETURN), d0
+00001224  4E4F                     334      trap    #15
+00001226                           335  
+00001226  B6BC 00000009            336      cmp.l   #9, d3
+0000122C  6E00 0008                337      bgt     .DontAddZero
+00001230                           338  
+00001230  4281                     339      clr.l   d1
+00001232  7003                     340      move.l  #(DISPLAY_NUMBER), d0
+00001234  4E4F                     341      trap    #15
+00001236                           342  
+00001236                           343  .DontAddZero:
+00001236  2203                     344      move.l  d3, d1
+00001238                           345  
+00001238  7003                     346      move.l  #(DISPLAY_NUMBER), d0
+0000123A  4E4F                     347      trap    #15
+0000123C                           348  
+0000123C  4E75                     349      rts
+0000123E                           350  
+0000123E                           351  ;params: d7: the long word to swapbyte, returns the bytes swapped long word in d7
+0000123E                           352  SwapBytes:
+0000123E                           353      ;DDCCBBAA
+0000123E  E15F                     354      rol.w   #8,d7   ;DDCCAABB
+00001240  4847                     355      swap.w  d7    ;AABBDDCC
+00001242  E15F                     356      rol.w   #8,d7   ;AABBCCDD
+00001244                           357      
+00001244  4E75                     358      rts
+00001246                           359  
+00001246                           360  
+00001246                           361  
+00001246                           362  
+00001246                           363  ;variables
+00001246                           364  
+00001246= 0D 0A 0D 0A 49 6E ...    365  messageFirstPart        dc.b    CR,LF,CR,LF,'Input the number of the data chunk(Must be between 1 and ',0
+00001284= 29 3A 00                 366  messageSecondPart       dc.b    '):',0
+00001287                           367  
+00001287= 0D 0A 54 68 65 20 ...    368  bytesAvgMsg             dc.b    CR,LF,'The bytes average is: ',0
+000012A0= 0D 0A 54 68 65 20 ...    369  shortsAvgMsg            dc.b    CR,LF,'The shorts average is: ',0
+000012BA= 0D 0A 54 68 65 20 ...    370  longsAvgMsg             dc.b    CR,LF,'The long average is: ',0
+000012D2= 2E 00                    371  point                   dc.b    '.',0
+000012D4                           372  
+000012D4= 00000000                 373  chunkNumber             dc.l    0   
+000012D8                           374  
+000012D8= 00000000                 375  numberOfChunks          dc.l    0
+000012DC                           376  
+000012DC= 00000000                 377  currentNumberOfBytes    dc.l    0
+000012E0= 00000000                 378  currentNumberOfShorts   dc.l    0
+000012E4= 00000000                 379  currentNumberOfLongs    dc.l    0
+000012E8= 00000000                 380  currentBytesPadding     dc.l    0
+000012EC                           381  ;currentShortsPadding   dc.l    0
+000012EC                           382  
+000012EC= 00000000                 383  bytesAverageQ           dc.l    0
+000012F0= 00000000                 384  bytesAverageR           dc.l    0
+000012F4= 00000000                 385  shortsAverageQ          dc.l    0
+000012F8= 00000000                 386  shortsAverageR          dc.l    0
+000012FC= 00000000                 387  longsAverageQ           dc.l    0
+00001300= 00000000                 388  longsAverageR           dc.l    0
+00001304                           389  
+00001304                           390  
+00001304                           391  
+00001304                           392  data                    incbin  "data.bin"
+00014B20                           393  
+00014B20                           394      END    START       
 
 No errors detected
 No warnings generated
@@ -136,25 +405,54 @@ SYMBOL TABLE INFORMATION
 Symbol-name         Value
 -------------------------
 ALL_REG             7FFF
-BYTESAVERAGE        10B6
-CALCULATEAVERAGES   1066
-CHUNKNUMBER         10AE
+BYTESAVERAGEQ       12EC
+BYTESAVERAGER       12F0
+BYTESAVGMSG         1287
+CALCULATEAVERAGES   1070
+CALCULATEAVERAGES:ADDNEXTBYTE  10E4
+CALCULATEAVERAGES:ADDNEXTLONG  117C
+CALCULATEAVERAGES:ADDNEXTSHORT  1132
+CALCULATEAVERAGES:CALCBYTESAVG  10DC
+CALCULATEAVERAGES:CALCLONGSAVG  1174
+CALCULATEAVERAGES:CALCSHORTSAVG  112A
+CALCULATEAVERAGES:MAKECALCS  10DC
+CALCULATEAVERAGES:NOBYTEROUNDING  111E
+CALCULATEAVERAGES:NOLONGROUNDING  11BC
+CALCULATEAVERAGES:NOSHORTROUND  116E
+CALCULATEAVERAGES:RETRIEVESTGS  1074
+CALCULATEAVERAGES:SETBYTESAVG  10EE
+CALCULATEAVERAGES:SETLONGSAVG  118C
+CALCULATEAVERAGES:SETSHORTSAVG  113E
+CALCULATEAVERAGES:TONEXTCHUNK  10B8
+CHUNKNUMBER         12D4
 CR                  D
-DATA                10C2
+CURRENTBYTESPADDING  12E8
+CURRENTNUMBEROFBYTES  12DC
+CURRENTNUMBEROFLONGS  12E4
+CURRENTNUMBEROFSHORTS  12E0
+DATA                1304
+DISPLAYAVERAGES     11C4
+DISPLAYONEAVERAGE   1214
+DISPLAYONEAVERAGE:DONTADDZERO  1236
 DISPLAY_NUMBER      3
 DISPLAY_STRING_WITHOUT_RETURN  E
 DISPLAY_STRING_WITH_RETURN  D
-GETINPUT            102C
-GETINPUT:DISPLAYMESSAGE  102C
-INITIALIZEVARS      1016
+GETINPUT            1036
+GETINPUT:DISPLAYMESSAGE  1036
+INITIALIZEVARS      1020
 LF                  A
-LONGSAVERAGE        10BE
+LONGSAVERAGEQ       12FC
+LONGSAVERAGER       1300
+LONGSAVGMSG         12BA
 MAIN                1000
-MESSAGEFIRSTPART    1070
-MESSAGESECONDPART   10AA
-MIN_CHUNK_NUMBER    0
-NUMBEROFCHUNKS      10B2
+MESSAGEFIRSTPART    1246
+MESSAGESECONDPART   1284
+MIN_CHUNK_NUMBER    1
+NUMBEROFCHUNKS      12D8
+POINT               12D2
 READ_A_NUMBER       4
-SHORTSAVERAGE       10BA
+SHORTSAVERAGEQ      12F4
+SHORTSAVERAGER      12F8
+SHORTSAVGMSG        12A0
 START               1000
-SWAPBYTES           1068
+SWAPBYTES           123E
