@@ -14,14 +14,37 @@ START  ORG    $1000
 
 Main:
 
+	jsr InitializeVars
 	jsr GetInput
+	;calculate averages
+	jsr CalculateAverages
+	;display averages
 
     STOP #$3000
 
+
+InitializeVars:
+
+	lea 	data, a0
+	move.l 	(a0), d7
+	jsr 	SwapBytes
+	move.l 	d7, (numberOfChunks)
+
+	rts
+
 GetInput:
-    ;display entry message
-    lea 	message, a1
+	;movem.l	ALL_REG, -(sp)
 .DisplayMessage:
+    ;display entry message
+    lea 	messageFirstPart, a1   
+    move.l 	#(DISPLAY_STRING_WITHOUT_RETURN), d0
+    trap 	#15
+
+    move.l 	(numberOfChunks), d1
+    move.l 	#(DISPLAY_NUMBER), d0
+    trap 	#15
+
+    lea 	messageSecondPart, a1   
     move.l 	#(DISPLAY_STRING_WITH_RETURN), d0
     trap 	#15
 
@@ -33,14 +56,34 @@ GetInput:
     cmp.l 	#(MIN_CHUNK_NUMBER), d1
     ble 	.DisplayMessage
 
-    cmp.l 	#(MAX_CHUNK_NUMBER), d1
+
+    cmp.l 	(numberOfChunks), d1
     bge 	.DisplayMessage
 
     ;store the chunk number
     move.l 	d1, (chunkNumber)
 
+	;movem.l	(sp)+, ALL_REG
     rts
 
+CalculateAverages:
+	
+	
+
+
+	rts
+
+
+
+
+;params: d7: the long word to swapbyte, returns the bytes swapped long word in d7
+SwapBytes:
+    ;DDCCBBAA
+    rol.w   #8,d7   ;DDCCAABB
+    swap.w    d7    ;AABBDDCC
+    rol.w   #8,d7   ;AABBCCDD
+    
+    rts
 
 
 
@@ -49,10 +92,21 @@ GetInput:
 
 ;variables
 
-message 	dc.b 'Input the number of the data chunk(Must be between 1 and 49):',0 	;with return to the line
-chunkNumber dc.l 0	
+messageFirstPart 	    dc.b 	'Input the number of the data chunk(Must be between 1 and ',0
+messageSecondPart 	    dc.b 	'):',0
+chunkNumber     		dc.l 	0	
+
+numberOfChunks 			dc.l 	0
+
+bytesAverage 			dc.l 	0
+shortsAverage 			dc.l 	0
+longsAverage 			dc.l 	0
+
+data 		    		incbin 	"data.bin"
 
     END    START       
+
+
 
 
 

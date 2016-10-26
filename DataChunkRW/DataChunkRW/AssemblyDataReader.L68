@@ -1,6 +1,6 @@
 00001000 Starting Address
 Assembler used: EASy68K Editor/Assembler v5.15.04
-Created On: 10/25/2016 11:28:03 PM
+Created On: 10/25/2016 11:51:03 PM
 
 00000000                             1  *-----------------------------------------------------------
 00000000                             2  * Title      : Assembly data reader
@@ -17,62 +17,116 @@ Created On: 10/25/2016 11:28:03 PM
 00001000                            13      include "equates.x68"
 00001000                            14  ;equates
 00001000                            15  
-00001000                            16  ;commands
-00001000  =00000004                 17  READ_A_NUMBER                   EQU 4
-00001000  =0000000D                 18  DISPLAY_STRING_WITH_RETURN      EQU 13
-00001000  =0000000E                 19  DISPLAY_STRING_WITHOUT_RETURN   EQU 14
-00001000                            20  
-00001000                            21  
-00001000                            22  ;input
-00001000  =00000000                 23  MIN_CHUNK_NUMBER    EQU 0
-00001000  =00000032                 24  MAX_CHUNK_NUMBER    EQU 50
-00001000                            25  
-00001000                            26  
-00001000  =0000000D                 27  CR  EQU $0D
-00001000  =0000000A                 28  LF  EQU $0A
-00001000  =0000000A                 29  -------------------- end include --------------------
-00001000                            30  
-00001000                            31  Main:
+00001000                            16  ALL_REG                         REG d0-d7/a0-a6
+00001000                            17  
+00001000                            18  ;commands
+00001000  =00000003                 19  DISPLAY_NUMBER                  EQU 3
+00001000  =00000004                 20  READ_A_NUMBER                   EQU 4
+00001000  =0000000D                 21  DISPLAY_STRING_WITH_RETURN      EQU 13
+00001000  =0000000E                 22  DISPLAY_STRING_WITHOUT_RETURN   EQU 14
+00001000                            23  
+00001000                            24  
+00001000                            25  ;input
+00001000  =00000000                 26  MIN_CHUNK_NUMBER    EQU 0
+00001000                            27  
+00001000                            28  
+00001000  =0000000D                 29  CR  EQU $0D
+00001000  =0000000A                 30  LF  EQU $0A
+00001000  =0000000A                 31  -------------------- end include --------------------
 00001000                            32  
-00001000  4EB9 0000100A             33      jsr GetInput
-00001006                            34  
-00001006  4E72 3000                 35      STOP #$3000
-0000100A                            36  
-0000100A                            37  GetInput:
-0000100A                            38      ;display entry message
-0000100A  43F9 00001030             39      lea     message, a1
-00001010                            40  .DisplayMessage:
-00001010  700D                      41      move.l  #(DISPLAY_STRING_WITH_RETURN), d0
-00001012  4E4F                      42      trap    #15
-00001014                            43  
-00001014                            44      ;read the chunk number from the user
-00001014  7004                      45      move.l  #(READ_A_NUMBER), d0
-00001016  4E4F                      46      trap    #15
-00001018                            47  
-00001018                            48      ;input control
-00001018  B2BC 00000000             49      cmp.l   #(MIN_CHUNK_NUMBER), d1
-0000101E  6FF0                      50      ble     .DisplayMessage
-00001020                            51  
-00001020  B2BC 00000032             52      cmp.l   #(MAX_CHUNK_NUMBER), d1
-00001026  6CE8                      53      bge     .DisplayMessage
-00001028                            54  
-00001028                            55      ;store the chunk number
-00001028  23C1 0000106E             56      move.l  d1, (chunkNumber)
-0000102E                            57  
-0000102E  4E75                      58      rts
-00001030                            59  
-00001030                            60  
-00001030                            61  
-00001030                            62  
-00001030                            63  
-00001030                            64  
-00001030                            65  
-00001030                            66  ;variables
-00001030                            67  
-00001030= 49 6E 70 75 74 20 ...     68  message     dc.b 'Input the number of the data chunk(Must be between 1 and 49):',0  ;with return to the line
-0000106E= 00000000                  69  chunkNumber dc.l 0  
-00001072                            70  
-00001072                            71      END    START       
+00001000                            33  Main:
+00001000                            34  
+00001000  4EB9 00001016             35      jsr InitializeVars
+00001006  4EB9 0000102C             36      jsr GetInput
+0000100C                            37      ;calculate averages
+0000100C  4EB9 00001066             38      jsr CalculateAverages
+00001012                            39      ;display averages
+00001012                            40  
+00001012  4E72 3000                 41      STOP #$3000
+00001016                            42  
+00001016                            43  
+00001016                            44  InitializeVars:
+00001016                            45  
+00001016  41F9 000010C2             46      lea     data, a0
+0000101C  2E10                      47      move.l  (a0), d7
+0000101E  4EB9 00001068             48      jsr     SwapBytes
+00001024  23C7 000010B2             49      move.l  d7, (numberOfChunks)
+0000102A                            50  
+0000102A  4E75                      51      rts
+0000102C                            52  
+0000102C                            53  GetInput:
+0000102C                            54      ;movem.l    ALL_REG, -(sp)
+0000102C                            55  .DisplayMessage:
+0000102C                            56      ;display entry message
+0000102C  43F9 00001070             57      lea     messageFirstPart, a1   
+00001032  700E                      58      move.l  #(DISPLAY_STRING_WITHOUT_RETURN), d0
+00001034  4E4F                      59      trap    #15
+00001036                            60  
+00001036  2239 000010B2             61      move.l  (numberOfChunks), d1
+0000103C  7003                      62      move.l  #(DISPLAY_NUMBER), d0
+0000103E  4E4F                      63      trap    #15
+00001040                            64  
+00001040  43F9 000010AA             65      lea     messageSecondPart, a1   
+00001046  700D                      66      move.l  #(DISPLAY_STRING_WITH_RETURN), d0
+00001048  4E4F                      67      trap    #15
+0000104A                            68  
+0000104A                            69      ;read the chunk number from the user
+0000104A  7004                      70      move.l  #(READ_A_NUMBER), d0
+0000104C  4E4F                      71      trap    #15
+0000104E                            72  
+0000104E                            73      ;input control
+0000104E  B2BC 00000000             74      cmp.l   #(MIN_CHUNK_NUMBER), d1
+00001054  6FD6                      75      ble     .DisplayMessage
+00001056                            76  
+00001056                            77  
+00001056  B2B9 000010B2             78      cmp.l   (numberOfChunks), d1
+0000105C  6CCE                      79      bge     .DisplayMessage
+0000105E                            80  
+0000105E                            81      ;store the chunk number
+0000105E  23C1 000010AE             82      move.l  d1, (chunkNumber)
+00001064                            83  
+00001064                            84      ;movem.l    (sp)+, ALL_REG
+00001064  4E75                      85      rts
+00001066                            86  
+00001066                            87  CalculateAverages:
+00001066                            88      
+00001066                            89      
+00001066                            90  
+00001066                            91  
+00001066  4E75                      92      rts
+00001068                            93  
+00001068                            94  
+00001068                            95  
+00001068                            96  
+00001068                            97  ;params: d7: the long word to swapbyte, returns the bytes swapped long word in d7
+00001068                            98  SwapBytes:
+00001068                            99      ;DDCCBBAA
+00001068  E15F                     100      rol.w   #8,d7   ;DDCCAABB
+0000106A  4847                     101      swap.w    d7    ;AABBDDCC
+0000106C  E15F                     102      rol.w   #8,d7   ;AABBCCDD
+0000106E                           103      
+0000106E  4E75                     104      rts
+00001070                           105  
+00001070                           106  
+00001070                           107  
+00001070                           108  
+00001070                           109  
+00001070                           110  
+00001070                           111  ;variables
+00001070                           112  
+00001070= 49 6E 70 75 74 20 ...    113  messageFirstPart        dc.b    'Input the number of the data chunk(Must be between 1 and ',0
+000010AA= 29 3A 00                 114  messageSecondPart       dc.b    '):',0
+000010AE= 00000000                 115  chunkNumber             dc.l    0   
+000010B2                           116  
+000010B2= 00000000                 117  numberOfChunks          dc.l    0
+000010B6                           118  
+000010B6= 00000000                 119  bytesAverage            dc.l    0
+000010BA= 00000000                 120  shortsAverage           dc.l    0
+000010BE= 00000000                 121  longsAverage            dc.l    0
+000010C2                           122  
+000010C2                           123  data                    incbin  "data.bin"
+000086EC                           124  
+000086EC                           125      END    START       
 
 No errors detected
 No warnings generated
@@ -81,16 +135,26 @@ No warnings generated
 SYMBOL TABLE INFORMATION
 Symbol-name         Value
 -------------------------
-CHUNKNUMBER         106E
+ALL_REG             7FFF
+BYTESAVERAGE        10B6
+CALCULATEAVERAGES   1066
+CHUNKNUMBER         10AE
 CR                  D
+DATA                10C2
+DISPLAY_NUMBER      3
 DISPLAY_STRING_WITHOUT_RETURN  E
 DISPLAY_STRING_WITH_RETURN  D
-GETINPUT            100A
-GETINPUT:DISPLAYMESSAGE  1010
+GETINPUT            102C
+GETINPUT:DISPLAYMESSAGE  102C
+INITIALIZEVARS      1016
 LF                  A
+LONGSAVERAGE        10BE
 MAIN                1000
-MAX_CHUNK_NUMBER    32
-MESSAGE             1030
+MESSAGEFIRSTPART    1070
+MESSAGESECONDPART   10AA
 MIN_CHUNK_NUMBER    0
+NUMBEROFCHUNKS      10B2
 READ_A_NUMBER       4
+SHORTSAVERAGE       10BA
 START               1000
+SWAPBYTES           1068
