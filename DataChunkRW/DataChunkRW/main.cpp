@@ -66,7 +66,7 @@ int main()
 
     //todo account for chars
     scanf("%d", &userInput);
-    while (userInput<=0 || userInput>=50)
+    while (userInput <= 0 || userInput >= 50)
     {
         printf("\nPlease input a positive integer between 1 and 49:");
         scanf("%d", &userInput);
@@ -86,20 +86,38 @@ int main()
     for (int k = 0; k < userInput; k++)
     {
         //write intro
-        fprintf(statsFile, "\nSection %d\n", k+1);
+        fprintf(statsFile, "\nSection %d\n", k + 1);
 
         //get random numbers for number of bytes, shorts and longs
         numBytes = getRandomNumber(ranges[MIN_NUM_BYTES_INDEX], ranges[MAX_NUM_BYTES_INDEX]);
         numShorts = getRandomNumber(ranges[MIN_NUM_SHORTS_INDEX], ranges[MAX_NUM_SHORTS_INDEX]);
         numLongs = getRandomNumber(ranges[MIN_NUM_LONGS_INDEX], ranges[MAX_NUM_LONGS_INDEX]);
+
+        //account for the padding
+
+        int bytesPadding = numBytes % 4;
+        if (bytesPadding)
+        {
+            bytesPadding = 4 - bytesPadding;
+        }
+
+        int shortsPadding = numShorts % 2;
+
+        BYTE paddingChar;
+
 #if DEBUG
-        printf("Chunk %d:\n Number of bytes is %d, number of shorts is %d , number of longs is %d\n", k+1, numBytes, numShorts, numLongs);
+        printf("\nChunk %d:\nNumber of bytes is %d\nNumber of shorts is %d\nNumber of longs is %d\n", k + 1, numBytes, numShorts, numLongs);
 #endif // DEBUG
 
         //add the ranges of this section to the data file
         fwrite(&numBytes, sizeof(numBytes), 1, dataFile);
         fwrite(&numShorts, sizeof(numShorts), 1, dataFile);
         fwrite(&numLongs, sizeof(numLongs), 1, dataFile);
+
+        //add the padding to data.bin to avoid calculating them in assembly
+        fwrite(&bytesPadding, sizeof(numLongs), 1, dataFile);
+        fwrite(&shortsPadding, sizeof(numLongs), 1, dataFile);
+
 
         //create and populate a bytes array
         BYTE* bytesArray = (BYTE*)calloc(numBytes, sizeof(BYTE));
@@ -110,29 +128,25 @@ int main()
         for (unsigned int i = 0; i < numBytes; i++)
         {
             // get a random number
-            BYTE number = (BYTE) getRandomNumber(MIN_BYTES_VALUE, MAX_BYTES_VALUE);
+            BYTE number = (BYTE)getRandomNumber(MIN_BYTES_VALUE, MAX_BYTES_VALUE);
             *(bytesArray + i) = number;
             total += number;
         }
         //add the bytes data to the data file
-        fwrite(bytesArray, sizeof(BYTE),numBytes, dataFile);
+        fwrite(bytesArray, sizeof(BYTE), numBytes, dataFile);
 
         free(bytesArray);
 
-        //account for the padding
-        BYTE paddingByte;
-
-        int bytesPadding =numBytes % 4;
-        if (bytesPadding)
+        //add the bytes padding
+        for (int i = 0; i < bytesPadding; i++)
         {
-            bytesPadding = 4 - bytesPadding;
-            for (int i = 0; i < bytesPadding; i++)
-            {
-                paddingByte = 'p';
-                fwrite(&paddingByte, sizeof(BYTE), 1, dataFile);
-            }
+            paddingChar = 'p';
+            fwrite(&paddingChar, sizeof(BYTE), 1, dataFile);
         }
-        printf("bytes padding: %d\n", bytesPadding);
+#if DEBUG
+        printf("Bytes padding: %d\n", bytesPadding);
+#endif // DEBUG
+
 
         //calculate bytes average
         float average = (float)total / (float)numBytes;
@@ -156,16 +170,15 @@ int main()
 
         free(shortsArray);
 
-        int shortsPadding = numShorts % 2;
-        if (shortsPadding)
+        //add the shorts padding
+        for (int i = 0; i < shortsPadding * 2; i++)
         {
-            for (int i = 0; i < shortsPadding*2; i++)
-            {
-                paddingByte = 'p';
-                fwrite(&paddingByte, sizeof(BYTE), 1, dataFile);
-            }
+            paddingChar = 'p';
+            fwrite(&paddingChar, sizeof(BYTE), 1, dataFile);
         }
-        printf("shorts padding: %d\n", shortsPadding);
+#if DEBUG
+        printf("Shorts padding: %d\n", shortsPadding);
+#endif // DEBUG
 
         //calculate short average
         average = (float)total / (float)numShorts;
