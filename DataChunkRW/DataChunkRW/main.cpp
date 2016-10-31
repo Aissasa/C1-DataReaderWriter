@@ -101,10 +101,6 @@ int main()
             bytesPadding = 4 - bytesPadding;
         }
 
-        //int shortsPadding = numShorts % 2;
-
-        BYTE paddingChar;
-
 #if DEBUG
         printf("\nChunk %d:\nNumber of bytes is %d\nNumber of shorts is %d\nNumber of longs is %d\n", k + 1, numBytes, numShorts, numLongs);
 #endif // DEBUG
@@ -138,6 +134,7 @@ int main()
         free(bytesArray);
 
         //add the bytes padding
+        BYTE paddingChar;
         for (int i = 0; i < bytesPadding; i++)
         {
             paddingChar = 'p';
@@ -169,16 +166,6 @@ int main()
         fwrite(shortsArray, sizeof(short), numShorts, dataFile);
 
         free(shortsArray);
-
-        //add the shorts padding
-        //for (int i = 0; i < shortsPadding * 2; i++)
-        //{
-        //    paddingChar = 'p';
-        //    fwrite(&paddingChar, sizeof(BYTE), 1, dataFile);
-        //}
-//#if DEBUG
-//        printf("Shorts padding: %d\n", shortsPadding);
-//#endif // DEBUG
 
         //calculate short average
         average = (float)total / (float)numShorts;
@@ -216,7 +203,7 @@ int main()
 
     //halt execution 
     char cTemp;
-    printf("\nPress Space to exit the program:");
+    printf("\Enter Space to exit the program:");
     cTemp = getchar();
     while (cTemp != ' ')
     {

@@ -1,181 +1,246 @@
-User chose 36 section(s)
+User chose 49 section(s)
 
 Section 1
-132 bytes, average value 99.73
-232 shorts, average value 1511.64
-294 longs, average value 3964.16
+107 bytes, average value 98.76
+339 shorts, average value 1484.29
+487 longs, average value 3972.03
 
 Section 2
-169 bytes, average value 100.30
-353 shorts, average value 1501.49
-201 longs, average value 3931.00
+107 bytes, average value 95.14
+339 shorts, average value 1510.06
+487 longs, average value 3984.38
 
 Section 3
-310 bytes, average value 97.66
-377 shorts, average value 1485.72
-449 longs, average value 3966.94
+107 bytes, average value 104.60
+339 shorts, average value 1488.75
+487 longs, average value 3963.59
 
 Section 4
-324 bytes, average value 97.46
-326 shorts, average value 1488.26
-426 longs, average value 3959.09
+107 bytes, average value 97.82
+339 shorts, average value 1507.97
+487 longs, average value 4035.94
 
 Section 5
-260 bytes, average value 101.31
-495 shorts, average value 1485.76
-492 longs, average value 3953.79
+107 bytes, average value 100.64
+339 shorts, average value 1485.88
+487 longs, average value 3969.26
 
 Section 6
-105 bytes, average value 101.61
-383 shorts, average value 1496.59
-396 longs, average value 3968.59
+107 bytes, average value 98.52
+339 shorts, average value 1487.72
+487 longs, average value 3986.04
 
 Section 7
-144 bytes, average value 97.65
-325 shorts, average value 1491.71
-467 longs, average value 3982.51
+107 bytes, average value 99.65
+339 shorts, average value 1499.22
+487 longs, average value 3961.04
 
 Section 8
-140 bytes, average value 103.66
-258 shorts, average value 1519.60
-249 longs, average value 3990.46
+107 bytes, average value 97.97
+339 shorts, average value 1492.91
+487 longs, average value 3979.43
 
 Section 9
-101 bytes, average value 99.14
-482 shorts, average value 1506.41
-252 longs, average value 4040.58
+107 bytes, average value 101.79
+339 shorts, average value 1497.40
+487 longs, average value 3956.73
 
 Section 10
-141 bytes, average value 97.60
-432 shorts, average value 1482.26
-403 longs, average value 3942.45
+107 bytes, average value 100.65
+339 shorts, average value 1478.48
+487 longs, average value 3980.20
 
 Section 11
-327 bytes, average value 100.43
-477 shorts, average value 1513.97
-172 longs, average value 4028.03
+107 bytes, average value 100.64
+339 shorts, average value 1489.08
+487 longs, average value 4029.89
 
 Section 12
-262 bytes, average value 100.49
-387 shorts, average value 1498.63
-461 longs, average value 3990.46
+107 bytes, average value 97.97
+339 shorts, average value 1498.67
+487 longs, average value 3975.05
 
 Section 13
-201 bytes, average value 99.47
-484 shorts, average value 1496.52
-434 longs, average value 4022.82
+107 bytes, average value 93.16
+339 shorts, average value 1517.93
+487 longs, average value 3979.16
 
 Section 14
-455 bytes, average value 99.53
-144 shorts, average value 1464.89
-443 longs, average value 3976.41
+107 bytes, average value 98.93
+339 shorts, average value 1517.26
+487 longs, average value 3932.83
 
 Section 15
-377 bytes, average value 98.18
-160 shorts, average value 1493.98
-499 longs, average value 3990.74
+107 bytes, average value 102.23
+339 shorts, average value 1484.21
+487 longs, average value 4011.94
 
 Section 16
-482 bytes, average value 98.73
-370 shorts, average value 1508.24
-186 longs, average value 3966.52
+107 bytes, average value 98.85
+339 shorts, average value 1491.51
+487 longs, average value 3948.77
 
 Section 17
-490 bytes, average value 101.99
-497 shorts, average value 1509.99
-352 longs, average value 3976.15
+107 bytes, average value 104.36
+339 shorts, average value 1502.77
+487 longs, average value 3976.43
 
 Section 18
-146 bytes, average value 99.16
-203 shorts, average value 1470.63
-443 longs, average value 3963.13
+107 bytes, average value 99.69
+339 shorts, average value 1487.46
+487 longs, average value 4001.43
 
 Section 19
-111 bytes, average value 100.24
-257 shorts, average value 1502.39
-100 longs, average value 3909.43
+107 bytes, average value 99.79
+339 shorts, average value 1503.03
+487 longs, average value 4031.75
 
 Section 20
-266 bytes, average value 98.58
-293 shorts, average value 1507.85
-365 longs, average value 4030.12
+107 bytes, average value 105.67
+339 shorts, average value 1507.45
+487 longs, average value 4000.30
 
 Section 21
-214 bytes, average value 100.30
-105 shorts, average value 1504.49
-108 longs, average value 3956.12
+107 bytes, average value 105.90
+339 shorts, average value 1526.16
+487 longs, average value 4022.19
 
 Section 22
-106 bytes, average value 96.56
-118 shorts, average value 1465.87
-273 longs, average value 4004.47
+107 bytes, average value 97.03
+339 shorts, average value 1499.83
+487 longs, average value 3992.37
 
 Section 23
-423 bytes, average value 101.75
-492 shorts, average value 1478.82
-336 longs, average value 3921.33
+107 bytes, average value 99.11
+339 shorts, average value 1465.55
+487 longs, average value 3980.05
 
 Section 24
-487 bytes, average value 101.94
-433 shorts, average value 1498.27
-197 longs, average value 4044.13
+107 bytes, average value 101.02
+339 shorts, average value 1496.15
+487 longs, average value 3970.48
 
 Section 25
-404 bytes, average value 99.85
-345 shorts, average value 1497.77
-193 longs, average value 4020.30
+107 bytes, average value 101.79
+339 shorts, average value 1517.31
+487 longs, average value 4021.18
 
 Section 26
-429 bytes, average value 96.92
-116 shorts, average value 1500.75
-439 longs, average value 3988.23
+107 bytes, average value 98.08
+339 shorts, average value 1491.11
+487 longs, average value 3969.82
 
 Section 27
-246 bytes, average value 99.04
-102 shorts, average value 1462.83
-284 longs, average value 3972.23
+107 bytes, average value 103.02
+339 shorts, average value 1518.80
+487 longs, average value 3935.09
 
 Section 28
-268 bytes, average value 100.56
-216 shorts, average value 1505.13
-258 longs, average value 4039.55
+107 bytes, average value 98.66
+339 shorts, average value 1493.40
+487 longs, average value 3985.26
 
 Section 29
-347 bytes, average value 99.13
-400 shorts, average value 1518.95
-485 longs, average value 3980.07
+107 bytes, average value 97.66
+339 shorts, average value 1480.46
+487 longs, average value 3951.74
 
 Section 30
-376 bytes, average value 99.61
-434 shorts, average value 1514.13
-134 longs, average value 3939.38
+107 bytes, average value 97.59
+339 shorts, average value 1506.19
+487 longs, average value 4002.41
 
 Section 31
-380 bytes, average value 101.54
-293 shorts, average value 1487.70
-438 longs, average value 4032.43
+107 bytes, average value 104.07
+339 shorts, average value 1526.40
+487 longs, average value 4000.90
 
 Section 32
-469 bytes, average value 99.13
-404 shorts, average value 1511.18
-123 longs, average value 3994.54
+107 bytes, average value 105.07
+339 shorts, average value 1507.28
+487 longs, average value 3998.94
 
 Section 33
-121 bytes, average value 102.12
-385 shorts, average value 1495.52
-439 longs, average value 3972.64
+107 bytes, average value 99.69
+339 shorts, average value 1525.44
+487 longs, average value 4028.30
 
 Section 34
-166 bytes, average value 100.99
-131 shorts, average value 1489.17
-314 longs, average value 3954.09
+107 bytes, average value 102.32
+339 shorts, average value 1491.55
+487 longs, average value 3968.53
 
 Section 35
-423 bytes, average value 102.21
-299 shorts, average value 1519.38
-282 longs, average value 4010.54
+107 bytes, average value 102.66
+339 shorts, average value 1507.59
+487 longs, average value 4023.52
 
 Section 36
-246 bytes, average value 93.83
-318 shorts, average value 1469.97
-154 longs, average value 4006.31
+107 bytes, average value 100.08
+339 shorts, average value 1498.27
+487 longs, average value 3920.23
+
+Section 37
+107 bytes, average value 100.50
+339 shorts, average value 1493.32
+487 longs, average value 3971.33
+
+Section 38
+107 bytes, average value 100.21
+339 shorts, average value 1455.41
+487 longs, average value 3967.05
+
+Section 39
+107 bytes, average value 102.53
+339 shorts, average value 1486.38
+487 longs, average value 3950.77
+
+Section 40
+107 bytes, average value 101.15
+339 shorts, average value 1512.06
+487 longs, average value 4009.07
+
+Section 41
+107 bytes, average value 98.82
+339 shorts, average value 1498.49
+487 longs, average value 4028.83
+
+Section 42
+107 bytes, average value 98.78
+339 shorts, average value 1506.71
+487 longs, average value 3950.02
+
+Section 43
+107 bytes, average value 98.21
+339 shorts, average value 1511.17
+487 longs, average value 3983.92
+
+Section 44
+107 bytes, average value 104.84
+339 shorts, average value 1476.83
+487 longs, average value 4010.46
+
+Section 45
+107 bytes, average value 96.45
+339 shorts, average value 1469.89
+487 longs, average value 4025.93
+
+Section 46
+107 bytes, average value 99.05
+339 shorts, average value 1480.22
+487 longs, average value 3997.25
+
+Section 47
+107 bytes, average value 98.24
+339 shorts, average value 1504.37
+487 longs, average value 3996.19
+
+Section 48
+107 bytes, average value 99.18
+339 shorts, average value 1505.02
+487 longs, average value 3966.51
+
+Section 49
+107 bytes, average value 95.76
+339 shorts, average value 1483.83
+487 longs, average value 3969.30

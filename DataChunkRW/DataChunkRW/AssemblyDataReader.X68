@@ -17,10 +17,9 @@ Main:
 	jsr InitializeVars
 	jsr GetInput
 	jsr CalculateAverages
-	;display averages
 	jsr DisplayAverages
     
-    jmp  Main
+    jmp  Main 			;for loopable testing
     STOP #$3000
 
 
@@ -34,7 +33,6 @@ InitializeVars:
 	rts
 
 GetInput:
-	;movem.l	ALL_REG, -(sp)
 .DisplayMessage:
     ;display entry message
     lea 	messageFirstPart, a1   
@@ -64,7 +62,6 @@ GetInput:
     ;store the chunk number
     move.l 	d1, (chunkNumber)
 
-	;movem.l	(sp)+, ALL_REG
     rts
 
 
@@ -92,10 +89,6 @@ CalculateAverages:
 	jsr 	SwapBytes
 	move.l 	d7, (currentBytesPadding)
 	
-	;move.l 	(a6)+, d7
-	;jsr 	SwapBytes
-	;move.l 	d7, (currentShortsPadding)
-
 	cmp.l 	(chunkNumber), d6
 	beq 	.MakeCalcs
 
@@ -107,7 +100,6 @@ CalculateAverages:
 	add.l 	(currentBytesPadding), a6
 	;shorts offset
 	move.l 	(currentNumberOfShorts), d0
-	;add.l 	(currentShortsPadding), d0
 	asl.l 	#1, d0
 	add.l 	d0, a6
 	;longs offset
@@ -367,6 +359,8 @@ longsAverageR 			dc.l 	0
 data 		    		incbin 	"data.bin"
 
     END    START       
+
+
 
 
 
