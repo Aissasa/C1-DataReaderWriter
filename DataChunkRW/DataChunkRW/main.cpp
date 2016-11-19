@@ -203,7 +203,7 @@ int main()
 
     //halt execution 
     char cTemp;
-    printf("\Enter Space to exit the program:");
+    printf("\nEnter Space to exit the program:");
     cTemp = getchar();
     while (cTemp != ' ')
     {
